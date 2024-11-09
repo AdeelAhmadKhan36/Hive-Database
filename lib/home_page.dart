@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_database/boxes/boxes.dart';
 import 'package:hive_database/model/notes_model.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -24,38 +25,69 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.indigo,
 
       ),
+       body: ValueListenableBuilder<Box<NotesModel>>(
+           valueListenable:Boxes.getData().listenable(),
+           builder: (context,box, _){
 
-      body: Column(
-        children: [
-          //Here We will get the values that stored in hive data base
-         FutureBuilder(
-           //Refrerence of data you want to show
-             future:Hive.openBox('Hive Dataabase') ,
-             builder: (context, snapshot){
-
-               return Column(
-                 children: [
-                   Text(snapshot.data!.get('Name').toString()),
-                   Text(snapshot.data!.get('Age').toString()),
-                 ],
-
-
-
-               );
-             }),
-          FutureBuilder(future: Hive.openBox('Department'), builder: (context,snapshot){
-
-            return Column(
-              children: [
-                Text(snapshot.data!.get('department').toString()),
-              ],
-            );
-          })
-
-
+             var data=box.values.toList().cast<NotesModel>();
+             return ListView.builder(
+               itemCount: box.length,
+               itemBuilder: (context, index){
+                 return Padding(
+                   padding: const EdgeInsets.only(left: 10,right: 10,top: 10),
+                   child: Card(
+                     color: Colors.green,
+                     child: Padding(
+                       padding: const EdgeInsets.only(left: 10),
+                       child: Column(
+                         mainAxisAlignment: MainAxisAlignment.start,
+                         crossAxisAlignment: CrossAxisAlignment.start,
+                         children: [
+                           Text(data[index].title.toString(),style: TextStyle(color: Colors.white),),
+                           Text(data[index].description.toString())
+                         ],
+                       ),
+                     ),
+                   ),
+                 );
+               },
+             );
 
 
-      ],),
+           })
+      // body: Column(
+
+
+      //   children: [
+      //     //Here We will get the values that stored in hive data base
+      //    FutureBuilder(
+      //      //Refrerence of data you want to show
+      //        future:Hive.openBox('Hive Dataabase') ,
+      //        builder: (context, snapshot){
+      //
+      //          return Column(
+      //            children: [
+      //              Text(snapshot.data!.get('Name').toString()),
+      //              Text(snapshot.data!.get('Age').toString()),
+      //            ],
+      //
+      //
+      //
+      //          );
+      //        }),
+      //     FutureBuilder(future: Hive.openBox('Department'), builder: (context,snapshot){
+      //
+      //       return Column(
+      //         children: [
+      //           Text(snapshot.data!.get('department').toString()),
+      //         ],
+      //       );
+      //     })
+      //
+      //
+      //
+      //
+      // ],),
       // floatingActionButton: FloatingActionButton(
       //   child:Icon(Icons.add) ,
       //     onPressed: ()async{
@@ -72,6 +104,7 @@ class _HomePageState extends State<HomePage> {
       //
       // }),
 
+      ,
       floatingActionButton: FloatingActionButton(
           child:Icon(Icons.add) ,
           onPressed: ()async{
